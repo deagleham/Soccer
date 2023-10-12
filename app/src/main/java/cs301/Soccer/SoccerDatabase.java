@@ -3,6 +3,7 @@ package cs301.Soccer;
 import android.util.Log;
 import cs301.Soccer.soccerPlayer.SoccerPlayer;
 import java.io.File;
+import java.io.PrintWriter;
 import java.net.SocketException;
 import java.util.*;
 
@@ -42,6 +43,11 @@ public class SoccerDatabase implements SoccerDB {
      */
     @Override
     public boolean removePlayer(String firstName, String lastName) {
+        String key = firstName + " " + lastName;
+        if(database.contains(key)){
+            database.remove(key);
+            return true;
+        }
         return false;
     }
 
@@ -63,6 +69,12 @@ public class SoccerDatabase implements SoccerDB {
      */
     @Override
     public boolean bumpGoals(String firstName, String lastName) {
+        String key = firstName + " " + lastName;
+        if(database.containsKey(key)){
+            SoccerPlayer player = database.get(key);
+            player.bumpGoals();
+            return true;
+        }
         return false;
     }
 
@@ -73,6 +85,12 @@ public class SoccerDatabase implements SoccerDB {
      */
     @Override
     public boolean bumpYellowCards(String firstName, String lastName) {
+        String key = firstName + " " + lastName;
+        if(database.containsKey(key)){
+            SoccerPlayer player = database.get(key);
+            player.bumpYellowCards();
+            return true;
+        }
         return false;
     }
 
@@ -83,6 +101,12 @@ public class SoccerDatabase implements SoccerDB {
      */
     @Override
     public boolean bumpRedCards(String firstName, String lastName) {
+        String key = firstName + " " + lastName;
+        if(database.containsKey(key)){
+            SoccerPlayer player = database.get(key);
+            player.bumpRedCards();
+            return true;
+        }
         return false;
     }
 
@@ -94,7 +118,18 @@ public class SoccerDatabase implements SoccerDB {
     @Override
     // report number of players on a given team (or all players, if null)
     public int numPlayers(String teamName) {
-        return -1;
+        if(teamName == null){
+            return database.size();
+        }
+        else{
+            int count = 0;
+            for(SoccerPlayer p : database.values()){
+                if(Objects.equals(p.getTeamName(), teamName)){
+                    count++;
+                }
+            }
+            return count;
+        }
     }
 
     /**
@@ -105,6 +140,23 @@ public class SoccerDatabase implements SoccerDB {
     // get the nTH player
     @Override
     public SoccerPlayer playerIndex(int idx, String teamName) {
+        int index = -1;
+        if(idx<database.size()){
+            for(SoccerPlayer p : database.values()){
+                if(teamName == null){
+                    index++;
+                    if(index == idx){
+                        return p;
+                    }
+                }
+                else if(Objects.equals(teamName, p.getTeamName())){
+                    index++;
+                    if(index == idx){
+                        return p;
+                    }
+                }
+            }
+        }
         return null;
     }
 
@@ -116,6 +168,8 @@ public class SoccerDatabase implements SoccerDB {
     // read data from file
     @Override
     public boolean readData(File file) {
+        //Scanner
+        //line by line, create a new player, add to database
         return file.exists();
     }
 
@@ -127,6 +181,18 @@ public class SoccerDatabase implements SoccerDB {
     // write data to file
     @Override
     public boolean writeData(File file) {
+        try {
+            PrintWriter pw = new PrintWriter(file);
+            for(SoccerPlayer p : database.values()){
+                pw.println(logString(p.getFirstName()));
+                pw.println(logString(p.getLastName()));
+                pw.println(logString(String.valueOf(p.getUniform())));
+                pw.println(logString(String.valueOf(p.getGoals())));
+                pw.println(logString(String.valueOf(p.getYellowCards())));
+                pw.println(logString(String.valueOf(p.getRedCards())));
+                pw.println(logString(p.getTeamName()));
+            }
+        }catch (Exception e){}
         return false;
     }
 
