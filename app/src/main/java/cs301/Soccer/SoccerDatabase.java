@@ -4,7 +4,6 @@ import android.util.Log;
 import cs301.Soccer.soccerPlayer.SoccerPlayer;
 import java.io.File;
 import java.io.PrintWriter;
-import java.net.SocketException;
 import java.util.*;
 
 /**
@@ -169,6 +168,16 @@ public class SoccerDatabase implements SoccerDB {
     @Override
     public boolean readData(File file) {
         //Scanner
+        try {
+            int i = 1;
+            Scanner sc = new Scanner(file);
+            while(sc.hasNextLine()){
+                HashSet<String> a = getTeams();
+                while(sc.hasNextLine()){
+                    
+                }
+            }
+        }catch (Exception e){}
         //line by line, create a new player, add to database
         return file.exists();
     }
